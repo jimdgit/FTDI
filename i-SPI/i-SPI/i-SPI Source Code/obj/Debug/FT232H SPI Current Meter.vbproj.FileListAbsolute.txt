@@ -1,0 +1,14 @@
+C:\i-SPI\i-SPI Source Code\bin\FT232H SPI Current Meter.exe.manifest
+C:\i-SPI\i-SPI Source Code\bin\FT232H SPI Current Meter.application
+C:\i-SPI\i-SPI Source Code\bin\FT232H SPI Current Meter.exe
+C:\i-SPI\i-SPI Source Code\bin\FT232H SPI Current Meter.pdb
+C:\i-SPI\i-SPI Source Code\bin\FT232H SPI Current Meter.xml
+C:\i-SPI\i-SPI Source Code\obj\Debug\ResolveAssemblyReference.cache
+C:\i-SPI\i-SPI Source Code\obj\Debug\D2XXUnit_NET.Form1.resources
+C:\i-SPI\i-SPI Source Code\obj\Debug\D2XXUnit_NET.Resources.resources
+C:\i-SPI\i-SPI Source Code\obj\Debug\FT232H SPI Current Meter.vbproj.GenerateResource.Cache
+C:\i-SPI\i-SPI Source Code\obj\Debug\FT232H SPI Current Meter.exe.manifest
+C:\i-SPI\i-SPI Source Code\obj\Debug\FT232H SPI Current Meter.application
+C:\i-SPI\i-SPI Source Code\obj\Debug\FT232H SPI Current Meter.exe
+C:\i-SPI\i-SPI Source Code\obj\Debug\FT232H SPI Current Meter.xml
+C:\i-SPI\i-SPI Source Code\obj\Debug\FT232H SPI Current Meter.pdb

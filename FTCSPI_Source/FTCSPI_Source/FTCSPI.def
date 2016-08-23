@@ -1,0 +1,44 @@
+; FTCSPI.def : Declares the module parameters for the DLL.
+; 21/08/08    kra     Added new functions for FT2232H and FT4232H hi-speed devices
+
+LIBRARY	"FTCSPI"
+
+EXPORTS
+  SPI_GetNumDevices								@1
+  SPI_GetDeviceNameLocID						@2
+  SPI_OpenEx									@3
+  SPI_Open										@4
+  SPI_Close										@5
+  SPI_InitDevice								@6
+  SPI_GetClock									@7
+  SPI_SetClock									@8
+  SPI_SetLoopback								@9
+  SPI_SetGPIOs									@10
+  SPI_GetGPIOs									@11
+  SPI_Write										@12
+  SPI_Read										@13
+  SPI_ClearDeviceCmdSequence					@14
+  SPI_AddDeviceWriteCmd							@15
+  SPI_AddDeviceReadCmd							@16
+  SPI_ExecuteDeviceCmdSequence					@17
+  SPI_GetDllVersion								@18
+  SPI_GetErrorCodeString						@19
+  SPI_GetNumHiSpeedDevices						@20
+  SPI_GetHiSpeedDeviceNameLocIDChannel			@21
+  SPI_OpenHiSpeedDevice							@22
+  SPI_GetHiSpeedDeviceType						@23
+  SPI_CloseDevice								@24
+  SPI_TurnOnDivideByFiveClockingHiSpeedDevice	@25
+  SPI_TurnOffDivideByFiveClockingHiSpeedDevice	@26
+  SPI_SetDeviceLatencyTimer						@27
+  SPI_GetDeviceLatencyTimer						@28
+  SPI_GetHiSpeedDeviceClock						@29
+  SPI_SetHiSpeedDeviceGPIOs						@30
+  SPI_GetHiSpeedDeviceGPIOs						@31
+  SPI_WriteHiSpeedDevice						@32
+  SPI_ReadHiSpeedDevice							@33
+  SPI_AddHiSpeedDeviceWriteCmd					@34
+  SPI_AddHiSpeedDeviceReadCmd					@35
+
+
+ 
