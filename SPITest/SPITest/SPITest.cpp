@@ -300,6 +300,7 @@ int main()
 		uint32 sizeToTransfer, sizeTransferred;
 		uint8 inBuffer[100];
 		uint8 outBuffer[100];
+        uint8 value;
 		while (1)
 		{
 			SPI_ToggleCS(ftHandle, 1);
@@ -308,6 +309,7 @@ int main()
 			outBuffer[1] = 0x55;
 			inBuffer[0] = 0;
 			inBuffer[1] = 0;
+            FT_ReadGPIO(ftHandle, &value);
 			status = SPI_ReadWrite(ftHandle, inBuffer, outBuffer, 1, &sizeTransferred,
 				SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES );
 			
