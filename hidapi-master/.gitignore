@@ -14,7 +14,7 @@ mac/Makefile.in
 missing
 testgui/Makefile.in
 windows/Makefile.in
-
+windows/*.sdf
 Makefile
 stamp-h1
 libtool

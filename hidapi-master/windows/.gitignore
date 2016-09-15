@@ -13,3 +13,4 @@ Release
 .libs
 *.lo
 *.la
+*.sdf
