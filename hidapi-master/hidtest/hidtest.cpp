@@ -70,7 +70,8 @@ int readHIDResponse(hid_device *handle, unsigned char **resp,int timeout)
         return -1; // Timed out.
     // First byte is length
     int len = *((unsigned int*)readbuffer) + 4;
-    *resp = (unsigned char *) malloc(len+16);
+    // we are going to grab 64 byte chunks, so we need multiples of 64
+    *resp = (unsigned char *) malloc((((len) / 64 + 1) * 64) );
     memcpy(*resp, readbuffer,64);
     len -= readBytes;
     ++i;
@@ -106,7 +107,7 @@ int main(int argc, char* argv[])
 	if (hid_init())
 		return -1;
 
-	devs = hid_enumerate(0x0, 0x0);
+	devs = hid_enumerate(0x1c37, 0xf1d0);
 	cur_dev = devs;	
 	while (cur_dev) {
 		printf("Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
@@ -115,7 +116,9 @@ int main(int argc, char* argv[])
 		printf("  Product:      %ls\n", cur_dev->product_string);
 		printf("  Release:      %hx\n", cur_dev->release_number);
 		printf("  Interface:    %d\n",  cur_dev->interface_number);
-		printf("\n");
+        printf("  Usage Page:   0x%x\n", cur_dev->usage_page);
+        printf("  Usage:        %d\n", cur_dev->usage);
+        printf("\n");
 		cur_dev = cur_dev->next;
 	}
 	hid_free_enumeration(devs);
