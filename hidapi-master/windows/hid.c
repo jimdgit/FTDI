@@ -61,7 +61,10 @@ extern "C" {
 
 
 #include "hidapi.h"
-
+#ifdef STATIC_LIB
+#undef HID_API_EXPORT_CALL 
+#define HID_API_EXPORT_CALL 
+#endif
 #ifdef _MSC_VER
 	/* Thanks Microsoft, but I know how to use strncpy(). */
 	#pragma warning(disable:4996)
