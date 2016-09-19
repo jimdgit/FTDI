@@ -1,8 +1,17 @@
 /*******************************************************
  Windows HID simplification
 
- Hacked for Sonavation
+ Alan Ott
+ Signal 11 Software
 
+ 8/22/2009
+
+ Copyright 2009
+ 
+ This contents of this file may be used by anyone
+ for any reason without any conditions and may be
+ used as a starting point for your own applications
+ which use HIDAPI.
 ********************************************************/
 
 #include <stdio.h>
@@ -10,84 +19,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include "hidapi.h"
-unsigned char echocmd[] = {
-    0x66, 0x00, 0x00, 0x00, 0x7f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x59, 0xaf, 0xac, 0xfb, 0x45, 0x18, 0xb6, 0x10, 0xcc, 0xbd, 0x43, 0x8b, 0x31, 0xb7, 0xa7, 0x9b,
-    0xfd, 0xd4, 0x4a, 0x09, 0x36, 0x3a, 0xc6, 0xd9, 0xcb, 0xec, 0x3f, 0xa3, 0x90, 0x0f, 0x5b, 0x7b, 0x00, 0x00, 0x16,
-    0x00, 0x00, 0x00, 0x22, 0x0f, 0x10, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-    0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-};
+
 // Headers needed for sleeping.
 #ifdef _WIN32
 	#include <windows.h>
 #else
 	#include <unistd.h>
 #endif
-/**
-*  Frame sizes.
-*/
-#define AES_IV_LEN                  16
-#define SPP_TAG_PREFIX_SIZE         1
-#define SPP_TAG_CATAGORY_SIZE       1
-#define SPP_TAG_SIZE_SIZE           4
-#define SPP_CMD_SIZE                (SPP_TAG_PREFIX_SIZE + SPP_TAG_CATAGORY_SIZE + SPP_TAG_SIZE_SIZE)
-#define SPP_HMAC_SIZE               32
-#define SPP_FRAME_SIZE_SIZE         4
-#define SPP_KEYID_SIZE              2
-#define SPP_KEYID_OFFSET            (SPP_FRAME_SIZE_SIZE + 2)
-#define SPP_PACKET_TYPE_OFFSET      (SPP_FRAME_SIZE_SIZE + 1)
-#define SPP_HEADER_SIZE             (SPP_FRAME_SIZE_SIZE  + SPP_KEYID_SIZE + AES_IV_LEN + SPP_HMAC_SIZE)
-#define AES_KEY_LEN                 16
-int SendHIDCommand(hid_device *handle,unsigned char *cmd)
-{
-    int len = *((unsigned int*)cmd);
-    unsigned char buffer[65];
-    int sent = 0;
-    int res = 0;
-    buffer[0] = 0;
 
-    while (sent  < len)
-    {
-        memcpy(&buffer[1], &cmd[sent], 64);
-        res = hid_write(handle, &buffer[0], 65);
-        if (res < 0) {
-            printf("Unable to write()\n");
-            printf("Error: %ls\n", hid_error(handle));
-        }
-        sent += 64;
-    }
-    return 0;
-}
-int readHIDResponse(hid_device *handle, unsigned char **resp,int timeout)
-{
-    unsigned char readbuffer[65];
-    int readBytes = 0;
-    int i = 0;
-    *resp = 0;
-    readBytes = hid_read_timeout(handle, readbuffer, 64, timeout);
-    if (!readBytes)
-        return -1; // Timed out.
-    // First byte is length
-    int len = *((unsigned int*)readbuffer) + 4;
-    // we are going to grab 64 byte chunks, so we need multiples of 64
-    *resp = (unsigned char *) malloc((((len) / 64 + 1) * 64) );
-    memcpy(*resp, readbuffer,64);
-    len -= readBytes;
-    ++i;
-    while (len > 0)
-    {
-        readBytes = hid_read_timeout(handle, readbuffer, 64, timeout);
-        if (readBytes)
-        {
-            memcpy((*resp) +(i*64), readbuffer, 64);
-        }
-        len -= readBytes;
-        ++i;
-
-    }
-    return 0;
-}
 int main(int argc, char* argv[])
 {
 	int res;
@@ -107,7 +46,7 @@ int main(int argc, char* argv[])
 	if (hid_init())
 		return -1;
 
-	devs = hid_enumerate(0x1c37, 0xf1d0);
+	devs = hid_enumerate(0x0, 0x0);
 	cur_dev = devs;	
 	while (cur_dev) {
 		printf("Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
@@ -116,9 +55,7 @@ int main(int argc, char* argv[])
 		printf("  Product:      %ls\n", cur_dev->product_string);
 		printf("  Release:      %hx\n", cur_dev->release_number);
 		printf("  Interface:    %d\n",  cur_dev->interface_number);
-        printf("  Usage Page:   0x%x\n", cur_dev->usage_page);
-        printf("  Usage:        %d\n", cur_dev->usage);
-        printf("\n");
+		printf("\n");
 		cur_dev = cur_dev->next;
 	}
 	hid_free_enumeration(devs);
@@ -132,8 +69,7 @@ int main(int argc, char* argv[])
 	// Open the device using the VID, PID,
 	// and optionally the Serial number.
 	////handle = hid_open(0x4d8, 0x3f, L"12345");
-    //  1c37 f1d0
-	handle = hid_open(0x1c37, 0xf1d0, NULL);
+	handle = hid_open(0x4d8, 0x3f, NULL);
 	if (!handle) {
 		printf("unable to open device\n");
  		return 1;
@@ -169,50 +105,8 @@ int main(int argc, char* argv[])
 	printf("Indexed String 1: %ls\n", wstr);
 
 	// Set the hid_read() function to be non-blocking.
+	hid_set_nonblocking(handle, 1);
 	
-
-    while (1)
-    {
-        unsigned char* resp;
-        unsigned char* data;
-        int datalen;
-        SendHIDCommand(handle,echocmd);
-        readHIDResponse(handle, &resp,1000);
-        if (resp)
-        {
-            int len = *((unsigned int*)resp) ;
-            printf("Received: %d bytes ", len);
-            data = resp + SPP_HEADER_SIZE;
-            datalen = *((int*)(data + 8));
-            if (memcmp((data+12), (echocmd + SPP_HEADER_SIZE + 12), datalen))
-            {
-                printf("Error in response\n");
-            }
-            else
-            {
-                printf("echo response OK\n");
-
-            }
-        }
-        if( resp )
-          free(resp);
-
-        /*
-        readBytes = hid_read_timeout(handle, readbuffer, 64, -1);
-        if (hid_error(handle) != 0) {
-            printf("Unable to read()\n");
-            printf("Error: %ls\n", hid_error(handle));
-        }
-        readBytes = hid_read_timeout(handle, &readbuffer[64], 64, -1);
-        if (hid_error(handle) != 0) {
-            printf("Unable to read()\n");
-            printf("Error: %ls\n", hid_error(handle));
-        }
-        */
-        printf("read: ");
-    }
-
-    hid_set_nonblocking(handle, 1);
 	// Try to read from the device. There shoud be no
 	// data here, but execution should not block.
 	res = hid_read(handle, buf, 17);
